@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D拖拽</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div id="perspective">
+        <div id="wrap">
+            <img src="./images/01.gif" alt="#">
+            <img src="./images/02.gif" alt="#">
+            <img src="./images/03.gif" alt="#">
+            <img src="./images/04.gif" alt="#">
+            <img src="./images/05.gif" alt="#">
+            <img src="./images/06.gif" alt="#">
+            <img src="./images/07.gif" alt="#">
+            <img src="./images/08.gif" alt="#">
+            <img src="./images/09.gif" alt="#">
+            <img src="./images/10.gif" alt="#">
+            <img src="./images/11.gif" alt="#">
+            <p></p>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function(){
+            let oWrap = document.getElementById("wrap");
+            let oImg = document.getElementsByTagName("img");
+            // console.log(oImg)
+            let oImgLength = oImg.length;
+            let oImgH = oWrap.clientHeight;
+            // console.log(oImgH)
+            // console.log(oImgLength)
+            let Deg = 360/oImgLength;
+            // console.log(Deg)
+            let moveX,
+                moveY,
+                downX,
+                downY,
+                minX = -10,
+                minY = 0;
+            let roX = -10;
+            let roY = 0;
+            let timer;
+            mTop()
+            window.onresize = mTop;
+            function mTop(){
+                var wH = document.documentElement.clientHeight;
+                // console.log(wH)
+                oWrap.style.marginTop = wH/2 - oImgH + "px";
+            }
+            for( var i=0; i<oImgLength; i++ ){
+                // console.log(1)
+                // console.log(oImg[i])
+                oImg[i].style.transform = "rotateY("+ i*Deg +"deg) translateZ(360px)";
+                oImg[i].style.transition = "transform 1s "+ (oImgLength-1-i)*0.1 + "s";
+            }
+            //鼠标按下事件 移动事件 松开事件
+            document.onmousedown = function( e ){
+                // console.log("鼠标按下")
+                e = e || window.event;
+                //按下时鼠标的位置
+                downX = e.clientX;
+                downY = e.clientY;
+                // console.log(downX,downY)
+
+                this.onmousemove = function( e ){
+                    // console.log("鼠标移动")
+                    e = e || window.event;
+                    //移动时鼠标的位置
+                    moveX = e.clientX;
+                    moveY = e.clientY;
+                    // console.log(moveX,moveY)
+                    //坐标差值
+                    minX = moveX - downX;
+                    minY = moveY - downY;
+                    // console.log(minX,minY)
+                    //摩擦系数
+                    roX -= minY*0.2;
+                    roY += minX*0.1;
+                    oWrap.style.transform = "rotateX("+ roX +"deg) rotateY("+ roY +"deg)";
+                    downX = moveX;
+                    downY = moveY;
+                }
+                this.onmouseup = function( e ){
+                    // console.log("鼠标松开")
+                    this.onmousemove = null;
+                    timer = setInterval(() => {
+                        minX *= 0.95;
+                        minY *= 0.95;
+                        roX -= minY*0.1;
+                        roY += minX*0.2;
+                        roY = roY + minX*0.2;
+                        oWrap.style.transform = "rotateX(" + roX + "deg) rotateY(" + roY + "deg)";
+                        if( Math.abs(minX)<0.1 && Math.abs(minY)<0.1 ){
+                            clearInterval(timer);
+                        }
+                    }, 0.1);
+                }
+                return false;
+            }
+
+
+
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+    </script>
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
